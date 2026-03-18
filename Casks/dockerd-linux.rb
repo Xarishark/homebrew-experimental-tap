@@ -1,16 +1,14 @@
 cask "dockerd-linux" do
-  arch intel: "x86_64"
-
   version "29.2.1"
-  sha256 intel: "a9a19e20dd09c61ec1af7d67d9dec2455004d0fbd35120fe1d24588c123f9474"
+  sha256 "a9a19e20dd09c61ec1af7d67d9dec2455004d0fbd35120fe1d24588c123f9474"
 
-  url "https://download.docker.com/linux/static/stable/#{arch}/docker-#{version}.tgz"
+  url "https://download.docker.com/linux/static/stable/x86_64/docker-#{version}.tgz"
   name "Dockerd"
   desc "Dockerd and utilities with rootless support by default"
   homepage "https://docs.docker.com/engine/security/rootless/"
 
   livecheck do
-    url "https://download.docker.com/linux/static/stable/#{arch}/"
+    url "https://download.docker.com/linux/static/stable/x86_64/"
     regex(/href=.*?docker[._-]v?(\d+(?:\.\d+)+)\.tgz/i)
   end
 
@@ -31,7 +29,7 @@ cask "dockerd-linux" do
   binary "docker-rootless-extras/vpnkit"
 
   preflight do
-    extras_url = "https://download.docker.com/linux/static/stable/#{arch}/docker-rootless-extras-#{version}.tgz"
+    extras_url = "https://download.docker.com/linux/static/stable/x86_64/docker-rootless-extras-#{version}.tgz"
 
     ohai "Downloading docker-rootless-extras..."
     system_command "curl", args: ["-L", extras_url, "-o", "#{staged_path}/extras.tgz"]

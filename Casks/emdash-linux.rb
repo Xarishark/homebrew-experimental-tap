@@ -1,10 +1,8 @@
 cask "emdash-linux" do
-  arch intel: "x86_64"
-
   version "0.4.18"
-  sha256 x86_64_linux: "7ad24b9dd5f6c081803660e3aae3828b07e1c2c1928808018e8a5214af42e782"
+  sha256 "7ad24b9dd5f6c081803660e3aae3828b07e1c2c1928808018e8a5214af42e782"
 
-  url "https://github.com/generalaction/emdash/releases/download/v#{version}/emdash-#{arch}.AppImage"
+  url "https://github.com/generalaction/emdash/releases/download/v#{version}/emdash-x86_64.AppImage"
   name "Emdash"
   desc "Agentic development environment for running multiple coding agents in parallel"
   homepage "https://emdash.sh/"
@@ -23,7 +21,7 @@ cask "emdash-linux" do
            target: "#{Dir.home}/.local/share/applications/emdash.desktop"
 
   preflight do
-    appimage_path = "#{staged_path}/emdash-#{arch}.AppImage"
+    appimage_path = "#{staged_path}/emdash-x86_64.AppImage"
     system "chmod", "+x", appimage_path
     system appimage_path, "--appimage-extract", chdir: staged_path
     FileUtils.rm(appimage_path)
