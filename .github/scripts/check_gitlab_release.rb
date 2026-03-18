@@ -19,16 +19,9 @@ class GitLabReleaseChecker
 
   def fetch_latest_release
     encoded_path = URI.encode_www_form_component(@project_path)
-    url = URI("https://gitlab.com/api/v4/projects/#{encoded_path}/releases/permalink/latest")
+    url = "https://gitlab.com/api/v4/projects/#{encoded_path}/releases/permalink/latest"
 
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true
-    http.read_timeout = 30
-
-    request = Net::HTTP::Get.new(url)
-    request["PRIVATE-TOKEN"] = @gitlab_token if @gitlab_token
-
-    response = http.request(request)
+    response = fetch_with_redirect(url)
 
     if response.is_a?(Net::HTTPSuccess)
       data = JSON.parse(response.body)
@@ -40,6 +33,26 @@ class GitLabReleaseChecker
   rescue => e
     warn "Error fetching GitLab release: #{e.message}"
     nil
+  end
+
+  def fetch_with_redirect(url, limit = 10)
+    raise "Too many redirects" if limit.zero?
+
+    uri = URI(url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == "https"
+    http.read_timeout = 30
+
+    request = Net::HTTP::Get.new(uri)
+    request["PRIVATE-TOKEN"] = @gitlab_token if @gitlab_token
+
+    response = http.request(request)
+
+    case response
+    when Net::HTTPSuccess    then response
+    when Net::HTTPRedirection then fetch_with_redirect(response["location"], limit - 1)
+    else response
+    end
   end
 
   def normalize_version(version)
